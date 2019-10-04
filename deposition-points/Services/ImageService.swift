@@ -9,7 +9,7 @@
 import Foundation
 
 protocol ImageServiceType {
-    func imageData(path: String, completion: @escaping (Data?, Error?) -> Void)
+    func imageData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
 }
 
 final class ImageService: ImageServiceType {
@@ -19,7 +19,7 @@ final class ImageService: ImageServiceType {
         self.downloader = downloader
     }
     
-    func imageData(path: String, completion: @escaping (Data?, Error?) -> Void) {
+    func imageData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
         downloader.lastModifiedDate(at: path) { (date) in
             
         }

@@ -9,8 +9,8 @@
 import Foundation
 import CoreData
 
-typealias DepositionPointsCompletion = ([DepositionPoint]?, Error?) -> Void
-typealias DepositionPartnersCompletion = ([DepositionPartner]?, Error?) -> Void
+typealias DepositionPointsCompletion = (Result<[DepositionPoint], Error>) -> Void
+typealias DepositionPartnersCompletion = (Result<[DepositionPartner], Error>) -> Void
 
 struct DepositionPointsSearchParams: Equatable {
     let center: Location
@@ -58,20 +58,24 @@ final class DepositionPointsService: DepositionPointsServiceType {
         fetchPersistentStore(with: params)
        
         depositionPointsNetworkProvider.depositionPoints(with: params, completion: {
-            [unowned self] (items, error) in
-            guard let items = items else { return }
-            // Backgroud thread
-            let taskContext = self.persistentContainer.newBackgroundContext()
-            taskContext.performAndWait {
-                items.forEach { $0.sync(in: taskContext) }
-                if taskContext.hasChanges {
-                    _ = try? taskContext.save()
+            [unowned self] result in
+            switch result {
+            case .success(let items):
+                // Backgroud thread
+                let taskContext = self.persistentContainer.newBackgroundContext()
+                taskContext.performAndWait {
+                    items.forEach { $0.sync(in: taskContext) }
+                    if taskContext.hasChanges {
+                        _ = try? taskContext.save()
+                    }
+                    taskContext.reset()
                 }
-                taskContext.reset()
-            }
 
-            if let lastParams = self.lastSearchParams, params == lastParams {
-                self.fetchPersistentStore(with: params)
+                if let lastParams = self.lastSearchParams, params == lastParams {
+                    self.fetchPersistentStore(with: params)
+                }
+            case .failure(let error):
+                NSLog(error.localizedDescription)
             }
         })
         
@@ -84,8 +88,9 @@ final class DepositionPointsService: DepositionPointsServiceType {
                 return
             }
             // if partner is not found in persistent store load partners from the server
-            self.depositionPartnersNetworkProvider.depositionPartners { (partners, error) in
-                if let partners = partners {
+            self.depositionPartnersNetworkProvider.depositionPartners { result in
+                switch result {
+                case .success(let partners):
                     let partner = partners.filter { $0.id == point.partnerName }.first
                     if let partner = partner {
                         self.imageData(path: partner.picture, completion: completion)
@@ -99,25 +104,34 @@ final class DepositionPointsService: DepositionPointsServiceType {
                          }
                          taskContext.reset()
                      }
+                case .failure(let error):
+                    NSLog(error.localizedDescription)
                 }
             }
         }
     }
     
     private func imageData(path: String, completion: @escaping (Data?) -> Void) {
-        self.imageService.imageData(path: path) { (data, error) in
-            completion(data)
+        self.imageService.imageData(path: path) { result in
+            switch result {
+            case .success(let data):
+                completion(data)
+            case .failure(_):
+                completion(nil)
+            }
         }
     }
     
     private func fetchPersistentStore(with params: DepositionPointsSearchParams) {
         DispatchQueue.main.async {
-            self.persistentStoreProvider.depositionPoints(with: params) { [unowned self] (points, error) in
-                guard let points = points else { return }
-                // Main thread
-                self.listener?.depositionPoints(points)
+            self.persistentStoreProvider.depositionPoints(with: params) { [unowned self] result in
+                switch result {
+                case .success(let points):
+                    self.listener?.depositionPoints(points)
+                case .failure(let error):
+                    NSLog(error.localizedDescription)
+                }
             }
         }
-        
     }
 }

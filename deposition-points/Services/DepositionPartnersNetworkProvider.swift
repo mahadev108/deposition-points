@@ -21,8 +21,8 @@ final class DepositionPartnersNetworkProvider: DepositionPartnersNetworkProvider
     }
     
     func depositionPartners(completion: @escaping DepositionPartnersCompletion) {
-        network.getItems(path: "deposition_partners", parameters: ["accountType": "Credit"]) { (partners, error) in
-            completion(partners, error)
+        network.getItems(path: "deposition_partners", parameters: ["accountType": "Credit"]) { result in
+            completion(result)
         }
     }
 }

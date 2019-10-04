@@ -21,8 +21,8 @@ final class DepositionPointsNetworkProvider: DepositionPointsNetworkProviderType
     }
     
     func depositionPoints(with params: DepositionPointsSearchParams, completion: @escaping DepositionPointsCompletion) {
-        network.getItems(path: "deposition_points", parameters: ["latitude": params.center.latitude, "longitude": params.center.longitude, "radius": Int(params.radius)]) { (points, error) in
-            completion(points, error)
+        network.getItems(path: "deposition_points", parameters: ["latitude": params.center.latitude, "longitude": params.center.longitude, "radius": Int(params.radius)]) { result in
+            completion(result)
         }
     }
     

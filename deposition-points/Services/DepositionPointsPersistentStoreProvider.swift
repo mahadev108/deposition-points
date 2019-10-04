@@ -27,9 +27,9 @@ final class DepositionPersistentStoreProvider: DepositionPersistentStoreProvider
         let predicate = NSPredicate(format: "(%@ <= longitude) AND (longitude <= %@) AND (%@ <= latitude) AND (latitude <= %@)", NSNumber(value: params.minLongitude), NSNumber(value: params.maxLongitude), NSNumber(value: params.minLatitude), NSNumber(value: params.maxLatitude))
         do {
             let results = try pointsRepository.query(with: predicate)
-            completion(results, nil)
+            completion(.success(results))
         } catch {
-            completion(nil, error)
+            completion(.failure(error))
         }
     }
     

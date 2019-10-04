@@ -8,9 +8,6 @@
 
 import UIKit
 
-protocol MapPresenterType {
-}
-
 class MapPresenter {
     weak var view: MapViewControllerInput!
     var depositionPointsService: DepositionPointsServiceType
@@ -23,7 +20,6 @@ class MapPresenter {
 
 extension MapPresenter: MapViewControllerOutput {
     func visibleMapRegionChanged(center location: Location, bufferRadius radius: Double, bufferMinLongitude: Double, bufferMaxLongitude: Double, bufferMinLatitude: Double, bufferMaxLatitude: Double) {
-        NSLog("Search params ready")
         let searchParams = DepositionPointsSearchParams(center: location, radius: radius, maxLatitude: bufferMaxLatitude, maxLongitude: bufferMaxLongitude, minLatitude: bufferMinLatitude, minLongitude: bufferMinLongitude)
         depositionPointsService.setSearchParams(searchParams)
     }
@@ -31,7 +27,6 @@ extension MapPresenter: MapViewControllerOutput {
 
 extension MapPresenter: DepositionPointsServiceListener {
     func depositionPoints(_ points: [DepositionPoint]) {
-        NSLog("Query fetched")
         view.showPoints(points)
     }
     

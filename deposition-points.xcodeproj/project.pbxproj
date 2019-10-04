@@ -11,7 +11,6 @@
 		6100373F234630CF000BC892 /* DepositionPointAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6100373E234630CF000BC892 /* DepositionPointAnnotationView.swift */; };
 		6100374123463276000BC892 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6100374023463276000BC892 /* UIView+Ext.swift */; };
 		6147A8882340981000F8EB32 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6147A8872340981000F8EB32 /* AppDelegate.swift */; };
-		6147A88A2340981000F8EB32 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6147A8892340981000F8EB32 /* SceneDelegate.swift */; };
 		6147A88C2340981000F8EB32 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6147A88B2340981000F8EB32 /* MapViewController.swift */; };
 		6147A88F2340981000F8EB32 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6147A88D2340981000F8EB32 /* Main.storyboard */; };
 		6147A8922340981000F8EB32 /* deposition_points.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6147A8902340981000F8EB32 /* deposition_points.xcdatamodeld */; };
@@ -51,7 +50,6 @@
 		6100374023463276000BC892 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 		6147A8842340981000F8EB32 /* deposition-points.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "deposition-points.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6147A8872340981000F8EB32 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		6147A8892340981000F8EB32 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		6147A88B2340981000F8EB32 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		6147A88E2340981000F8EB32 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6147A8912340981000F8EB32 /* deposition_points.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = deposition_points.xcdatamodel; sourceTree = "<group>"; };
@@ -188,7 +186,6 @@
 			isa = PBXGroup;
 			children = (
 				6147A8872340981000F8EB32 /* AppDelegate.swift */,
-				6147A8892340981000F8EB32 /* SceneDelegate.swift */,
 				61D9387A23464B9C00D5C895 /* DependencyInjector.swift */,
 			);
 			path = App;
@@ -306,7 +303,6 @@
 				6147A89F2340A94900F8EB32 /* MapPresenter.swift in Sources */,
 				6147A8B3234103EC00F8EB32 /* CDDepositionPoint+Ext.swift in Sources */,
 				6147A8882340981000F8EB32 /* AppDelegate.swift in Sources */,
-				6147A88A2340981000F8EB32 /* SceneDelegate.swift in Sources */,
 				61B463DC234655C5008D7D06 /* ScreenScale.swift in Sources */,
 				6147A8B7234107D100F8EB32 /* CoreDataRepresentable.swift in Sources */,
 			);

@@ -9,8 +9,8 @@
 import Foundation
 
 protocol ImageDownloaderType {
-    func imageData(path: String, completion: @escaping (Data?, Error?) -> Void)
-    func lastModifiedDate(at path: String, completion: @escaping (String?) -> Void)
+    func imageData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
+    func lastModifiedDate(at path: String, completion: @escaping (Result<String, Error>) -> Void)
 }
 
 final class ImageDownloader: ImageDownloaderType {
@@ -23,40 +23,40 @@ final class ImageDownloader: ImageDownloaderType {
         self.session = URLSession(configuration: .default)
     }
     
-    func imageData(path: String, completion: @escaping (Data?, Error?) -> Void) {
+    func imageData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
         let absolutePath = "\(endPoint)/\(ScreenScale.main.dpi)/\(path)"
         guard let url = URL(string: absolutePath) else {
-            completion(nil, DefaultError.urlError)
+            completion(.failure(DefaultError.urlError))
             return
         }
         let task = session.dataTask(with: url) { (data, response, error) in
             guard let data = data else {
-                completion(nil, DefaultError.networkUnavailable)
+                completion(.failure(DefaultError.networkUnavailable))
                 return
             }
-            completion(data, nil)
+            completion(.success(data))
         }
         task.resume()
     }
     
-    func lastModifiedDate(at path: String, completion: @escaping (String?) -> Void) {
+    func lastModifiedDate(at path: String, completion: @escaping (Result<String, Error>) -> Void) {
         let absolutePath = "\(endPoint)/\(ScreenScale.main.dpi)/\(path)"
         guard let url = URL(string: absolutePath) else {
-            completion(nil)
+            completion(.failure(DefaultError.urlError))
             return
         }
         var request = URLRequest(url: url)
         request.httpMethod = "HEAD"
         let task = session.dataTask(with: request) { (data, response, error) in
             guard let response = response as? HTTPURLResponse else {
-                completion(nil)
+                completion(.failure(DefaultError.networkUnavailable))
                 return
             }
             guard let lastModifiedString = response.allHeaderFields["Last-Modified"] as? String else {
-                completion(nil)
+                completion(.failure(DefaultError.wrongDataFormat))
                 return
             }
-            
+            completion(.success(lastModifiedString))
         }
         task.resume()
     }
