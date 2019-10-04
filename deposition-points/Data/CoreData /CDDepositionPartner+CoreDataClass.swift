@@ -6,9 +6,7 @@
 //  Copyright © 2019 MSU. All rights reserved.
 //
 
-import Foundation
 import CoreData
-
 
 final class CDDepositionPartner: NSManagedObject {
 

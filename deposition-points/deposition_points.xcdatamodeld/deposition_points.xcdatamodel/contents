@@ -22,8 +22,19 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="CDImageResource" representedClassName=".CDImageResource" syncable="YES">
+        <attribute name="lastModified" optional="YES" attributeType="String"/>
+        <attribute name="localPath" optional="YES" attributeType="String"/>
+        <attribute name="uniqueId" optional="YES" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="uniqueId"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
     <elements>
         <element name="CDDepositionPartner" positionX="-63" positionY="18" width="128" height="88"/>
         <element name="CDDepositionPoint" positionX="-63" positionY="-18" width="128" height="118"/>
+        <element name="CDImageResource" positionX="-63" positionY="27" width="128" height="88"/>
     </elements>
 </model>

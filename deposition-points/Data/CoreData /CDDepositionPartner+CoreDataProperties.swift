@@ -6,11 +6,9 @@
 //  Copyright © 2019 MSU. All rights reserved.
 //
 
-import Foundation
 import CoreData
 
 extension CDDepositionPartner {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<CDDepositionPartner> {
         return NSFetchRequest<CDDepositionPartner>(entityName: "CDDepositionPartner")
     }

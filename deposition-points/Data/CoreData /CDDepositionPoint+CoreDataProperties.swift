@@ -6,13 +6,12 @@
 //  Copyright © 2019 MSU. All rights reserved.
 //
 
-import Foundation
 import CoreData
 
 extension CDDepositionPoint {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<CDDepositionPoint> {
         let request = NSFetchRequest<CDDepositionPoint>(entityName: "CDDepositionPoint")
+        request.fetchLimit = 1000
         return request
     }
 

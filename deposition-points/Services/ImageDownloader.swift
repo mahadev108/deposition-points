@@ -9,7 +9,7 @@
 import Foundation
 
 protocol ImageDownloaderType {
-    func imageData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
+    func imageData(path: String, completion: @escaping (Result<(Data, String), Error>) -> Void)
     func lastModifiedDate(at path: String, completion: @escaping (Result<String, Error>) -> Void)
 }
 
@@ -23,18 +23,18 @@ final class ImageDownloader: ImageDownloaderType {
         self.session = URLSession(configuration: .default)
     }
     
-    func imageData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
+    func imageData(path: String, completion: @escaping (Result<(Data, String), Error>) -> Void) {
         let absolutePath = "\(endPoint)/\(ScreenScale.main.dpi)/\(path)"
         guard let url = URL(string: absolutePath) else {
             completion(.failure(DefaultError.urlError))
             return
         }
         let task = session.dataTask(with: url) { (data, response, error) in
-            guard let data = data else {
+            guard let data = data, let response = response as? HTTPURLResponse, let lastModifiedString = response.allHeaderFields["Last-Modified"] as? String else {
                 completion(.failure(DefaultError.networkUnavailable))
                 return
             }
-            completion(.success(data))
+            completion(.success((data, lastModifiedString)))
         }
         task.resume()
     }

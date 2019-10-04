@@ -137,15 +137,15 @@ extension MapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         let visibleRect = mapView.visibleMapRect
         let bufferRect = visibleRect.insetBy(dx: -marginFactor * visibleRect.width, dy: -marginFactor * visibleRect.height)
-        if let maxRect = maxBufferRect {
-            if maxRect.contains(bufferRect) {
-                DispatchQueue.global().async {
-                    self.updateVisibleAnnotations()
-                }
-                return
-            }
-        }
-        maxBufferRect = bufferRect
+//        if let maxRect = maxBufferRect {
+//            if maxRect.contains(bufferRect) {
+//                DispatchQueue.global().async {
+//                    self.updateVisibleAnnotations()
+//                }
+////                return
+//            }
+//        }
+//        maxBufferRect = bufferRect
         let centerCoordinate = mapView.region.center
         let centerLocation = Location(coordinate: centerCoordinate)
         let centerPoint = MKMapPoint(centerCoordinate)

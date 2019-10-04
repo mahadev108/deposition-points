@@ -17,7 +17,7 @@ class DependencyInjector {
         let depositionPartnersNetwork = Network<DepositionPartner>(endPoint: endpoint)
         let depositionPartnersNetworkProvider = DepositionPartnersNetworkProvider(network: depositionPartnersNetwork)
         let downloader = ImageDownloader(endPoint: "https://static.tinkoff.ru/icons/deposition-partners-v3")
-        let imageService = ImageService(downloader: downloader)
+        let imageService = ImageService(downloader: downloader, persistentContainer: persistentContainer)
         let depositionPointsService = DepositionPointsService(depositionPointsNetworkProvider: depositionPointsNetworkProvider, depositionPartnersNetworkProvider: depositionPartnersNetworkProvider, imageService: imageService, persistentContainer: persistentContainer)
         let mapPresenter = MapPresenter(depositionPointsService: depositionPointsService)
         mapPresenter.view = mapViewController
