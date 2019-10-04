@@ -13,3 +13,9 @@ struct DepositionPoint: Codable {
     let externalId: String
     let location: Location
 }
+
+extension DepositionPoint: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.uniqueId == rhs.uniqueId
+    }
+}

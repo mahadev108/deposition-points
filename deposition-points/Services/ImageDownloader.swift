@@ -10,6 +10,7 @@ import Foundation
 
 protocol ImageDownloaderType {
     func imageData(path: String, completion: @escaping (Data?, Error?) -> Void)
+    func lastModifiedDate(at path: String, completion: @escaping (String?) -> Void)
 }
 
 final class ImageDownloader: ImageDownloaderType {
@@ -34,6 +35,28 @@ final class ImageDownloader: ImageDownloaderType {
                 return
             }
             completion(data, nil)
+        }
+        task.resume()
+    }
+    
+    func lastModifiedDate(at path: String, completion: @escaping (String?) -> Void) {
+        let absolutePath = "\(endPoint)/\(ScreenScale.main.dpi)/\(path)"
+        guard let url = URL(string: absolutePath) else {
+            completion(nil)
+            return
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+        let task = session.dataTask(with: request) { (data, response, error) in
+            guard let response = response as? HTTPURLResponse else {
+                completion(nil)
+                return
+            }
+            guard let lastModifiedString = response.allHeaderFields["Last-Modified"] as? String else {
+                completion(nil)
+                return
+            }
+            
         }
         task.resume()
     }

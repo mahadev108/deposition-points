@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIView {
-    class var defaultReuseIdentifier: String {
-        return String(describing: type(of: self))
+    @objc class var defaultReuseIdentifier: String {
+        return String(describing: self)
     }
 }

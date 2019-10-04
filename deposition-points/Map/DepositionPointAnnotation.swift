@@ -20,4 +20,13 @@ class DepositionPointAnnotation: NSObject, MKAnnotation {
         self.depositionPoint = depositionPoint
         super.init()
     }
+    
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? DepositionPointAnnotation else { return false }
+        return depositionPoint.uniqueId == other.depositionPoint.uniqueId
+    }
+    
+    override var hash: Int {
+        return depositionPoint.uniqueId.hashValue
+    }
 }

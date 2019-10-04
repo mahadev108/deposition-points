@@ -13,8 +13,6 @@ extension CDDepositionPoint {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<CDDepositionPoint> {
         let request = NSFetchRequest<CDDepositionPoint>(entityName: "CDDepositionPoint")
-        request.returnsObjectsAsFaults = false
-        request.fetchLimit = 500
         return request
     }
 

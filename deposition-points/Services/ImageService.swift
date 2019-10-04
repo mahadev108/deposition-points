@@ -20,6 +20,9 @@ final class ImageService: ImageServiceType {
     }
     
     func imageData(path: String, completion: @escaping (Data?, Error?) -> Void) {
+        downloader.lastModifiedDate(at: path) { (date) in
+            
+        }
         downloader.imageData(path: path, completion: completion)
     }
 }

@@ -80,22 +80,17 @@ final class DepositionPointsService: DepositionPointsServiceType {
     func partnerImage(for point: DepositionPoint, completion: @escaping (Data?) -> Void) {
         persistentStoreProvider.depositionPartner(name: point.partnerName) { [unowned self] (partner) in
             if let partner = partner {
-                self.imageService.imageData(path: partner.picture) { (data, error) in
-                    completion(data)
-                }
+                self.imageData(path: partner.picture, completion: completion)
                 return
             }
+            // if partner is not found in persistent store load partners from the server
             self.depositionPartnersNetworkProvider.depositionPartners { (partners, error) in
                 if let partners = partners {
                     let partner = partners.filter { $0.id == point.partnerName }.first
                     if let partner = partner {
-                        self.imageService.imageData(path: partner.picture) { (data, error) in
-                            completion(data)
-                        }
+                        self.imageData(path: partner.picture, completion: completion)
                     }
-                    
                     // Backgroud thread
-                    
                      let taskContext = self.persistentContainer.newBackgroundContext()
                      taskContext.performAndWait {
                          partners.forEach { $0.sync(in: taskContext) }
@@ -104,9 +99,14 @@ final class DepositionPointsService: DepositionPointsServiceType {
                          }
                          taskContext.reset()
                      }
-                    
                 }
             }
+        }
+    }
+    
+    private func imageData(path: String, completion: @escaping (Data?) -> Void) {
+        self.imageService.imageData(path: path) { (data, error) in
+            completion(data)
         }
     }
     
