@@ -40,19 +40,13 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         allAnnotationsMapView = MKMapView(frame: CGRect.zero)
+        controlsStackView.addArrangedSubview(MKUserTrackingButton(mapView: mapView))
+        
         mapView.delegate = self
         mapView.showsUserLocation = true
         mapView.register(DepositionPointAnnotationView.self, forAnnotationViewWithReuseIdentifier: DepositionPointAnnotationView.defaultReuseIdentifier)
+        
         locationManager.requestWhenInUseAuthorization()
-        
-        
-        controlsStackView.addArrangedSubview(MKUserTrackingButton(mapView: mapView))
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        let coordinate = CLLocationCoordinate2D(latitude: 55.755786, longitude: 37.617633)
-        zoomToLocation(coordinate: coordinate)
     }
     
     // MARK: - Actions
