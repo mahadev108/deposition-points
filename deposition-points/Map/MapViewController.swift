@@ -106,23 +106,15 @@ class MapViewController: UIViewController {
             gridMapRect.origin.x = startX
             while gridMapRect.minX <= endX {
                 let allAnnotationsInBucket = allAnnotationsMapView.annotations(in: gridMapRect)
-                var visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect).filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
+                let visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect).filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
                 var filteredAnnotationsInBucket = allAnnotationsInBucket.filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
                 if !filteredAnnotationsInBucket.isEmpty {
                     let annotationForGrid = annotation(in: gridMapRect, using: filteredAnnotationsInBucket)
                     self.mapView.addAnnotation(annotationForGrid)
-                    visibleAnnotationsInBucket.remove(annotationForGrid)
                     filteredAnnotationsInBucket.remove(annotationForGrid)
-                    let joined = visibleAnnotationsInBucket.union(filteredAnnotationsInBucket)
-                    joined.forEach { (annotation) in
+                    filteredAnnotationsInBucket.forEach { (annotation) in
                         if (visibleAnnotationsInBucket.contains(annotation)) {
-                            let annotationView = self.mapView.view(for: annotation)
-                            UIView.animate(withDuration: self.animationDuration, animations: {
-                                annotationView?.alpha = 0
-                            }) { (completed) in
-                                self.mapView.removeAnnotation(annotation)
-                            }
-                            
+                            removeWithAnimation(annotation: annotation, from: mapView)
                         }
                     }
                 }
@@ -177,6 +169,15 @@ extension MapViewController: MKMapViewDelegate {
         views.forEach { $0.alpha = 0 }
         UIView.animate(withDuration: animationDuration) {
             views.forEach { $0.alpha = 1 }
+        }
+    }
+    
+    func removeWithAnimation(annotation: MKAnnotation, from: MKMapView) {
+        let annotationView = self.mapView.view(for: annotation)
+        UIView.animate(withDuration: self.animationDuration, animations: {
+            annotationView?.alpha = 0
+        }) { (completed) in
+            self.mapView.removeAnnotation(annotation)
         }
     }
     
