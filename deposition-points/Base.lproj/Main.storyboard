@@ -18,17 +18,45 @@
                             <mapView multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="IZg-hu-aJC">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                             </mapView>
+                            <stackView opaque="NO" contentMode="scaleToFill" placeholderIntrinsicWidth="110" placeholderIntrinsicHeight="200" axis="vertical" distribution="fillEqually" spacing="25" translatesAutoresizingMaskIntoConstraints="NO" id="7Bn-zY-6UL">
+                                <rect key="frame" x="349" y="385.5" width="50" height="125"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u5E-0n-yLK" customClass="ScaleButton" customModule="deposition_points" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="u5E-0n-yLK" secondAttribute="height" multiplier="1:1" id="D7L-Aa-Pt4"/>
+                                            <constraint firstAttribute="width" constant="50" id="KPT-ZN-2Hf"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <state key="normal" title="+"/>
+                                        <connections>
+                                            <action selector="zoomInTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="atD-d5-HY3"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tng-qS-mK7" customClass="ScaleButton" customModule="deposition_points" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="75" width="50" height="50"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <state key="normal" title="–"/>
+                                        <connections>
+                                            <action selector="zoomOutTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="HC1-kP-KFm"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="IZg-hu-aJC" secondAttribute="trailing" id="3Pq-0j-D8Z"/>
                             <constraint firstAttribute="bottom" secondItem="IZg-hu-aJC" secondAttribute="bottom" id="BiL-a7-Hdt"/>
                             <constraint firstItem="IZg-hu-aJC" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Ztl-hu-0ac"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="7Bn-zY-6UL" secondAttribute="trailing" constant="15" id="gkz-dc-xuy"/>
                             <constraint firstItem="IZg-hu-aJC" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="mnw-ly-9eL"/>
+                            <constraint firstItem="7Bn-zY-6UL" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="wgi-1t-jRP"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="controlsStackView" destination="7Bn-zY-6UL" id="Xkb-L9-ki1"/>
                         <outlet property="mapView" destination="IZg-hu-aJC" id="wuF-or-xBX"/>
                     </connections>
                 </viewController>

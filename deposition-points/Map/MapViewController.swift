@@ -22,6 +22,7 @@ class MapViewController: UIViewController {
     
     // MARK: - IB Outlets
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var controlsStackView: UIStackView!
     
     // MARK: - Injected dependecies
     var output: MapViewControllerOutput!
@@ -29,8 +30,6 @@ class MapViewController: UIViewController {
     // MARK: - Private properties
     private var locationManager = CLLocationManager()
     private var allAnnotationsMapView: MKMapView!
-    private var allPoints: [DepositionPoint] = []
-    private var maxBufferRect: MKMapRect?
     private let defaultSpan = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     private let marginFactor = 0.1
     private let bucketSize = 100.0
@@ -45,12 +44,31 @@ class MapViewController: UIViewController {
         mapView.showsUserLocation = true
         mapView.register(DepositionPointAnnotationView.self, forAnnotationViewWithReuseIdentifier: DepositionPointAnnotationView.defaultReuseIdentifier)
         locationManager.requestWhenInUseAuthorization()
+        
+        
+        controlsStackView.addArrangedSubview(MKUserTrackingButton(mapView: mapView))
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let coordinate = CLLocationCoordinate2D(latitude: 55.755786, longitude: 37.617633)
         zoomToLocation(coordinate: coordinate)
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func zoomInTapped(_ sender: Any) {
+        var region = mapView.region
+        region.span.latitudeDelta /= 2
+        region.span.longitudeDelta /= 2
+        mapView.setRegion(region, animated: true)
+    }
+    
+    @IBAction func zoomOutTapped(_ sender: Any) {
+        var region = mapView.region
+        region.span.latitudeDelta = min(region.span.latitudeDelta * 2, 180)
+        region.span.longitudeDelta = min(region.span.longitudeDelta * 2, 180)
+        mapView.setRegion(region, animated: true)
     }
     
     // MARK: - Private Methods
@@ -89,47 +107,44 @@ class MapViewController: UIViewController {
         let endX = (adjustedRect.maxX / gridSize).rounded(.down) * gridSize
         let endY = (adjustedRect.maxY / gridSize).rounded(.down) * gridSize
         
-        var numberOfGrids = 0
         gridMapRect.origin.y = startY
         while gridMapRect.minY <= endY {
             gridMapRect.origin.x = startX
             while gridMapRect.minX <= endX {
                 let allAnnotationsInBucket = allAnnotationsMapView.annotations(in: gridMapRect)
-                let visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect)
+                var visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect).filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
                 var filteredAnnotationsInBucket = allAnnotationsInBucket.filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
                 if !filteredAnnotationsInBucket.isEmpty {
                     let annotationForGrid = annotation(in: gridMapRect, using: filteredAnnotationsInBucket)
-                    DispatchQueue.main.async {
-                        self.mapView.addAnnotation(annotationForGrid)
-                    }
+                    self.mapView.addAnnotation(annotationForGrid)
+                    visibleAnnotationsInBucket.remove(annotationForGrid)
                     filteredAnnotationsInBucket.remove(annotationForGrid)
-                    filteredAnnotationsInBucket.forEach { (annotation) in
+                    let joined = visibleAnnotationsInBucket.union(filteredAnnotationsInBucket)
+                    joined.forEach { (annotation) in
                         if (visibleAnnotationsInBucket.contains(annotation)) {
-                            DispatchQueue.main.async {
-                                let annotationView = self.mapView.view(for: annotation)
-                                UIView.animate(withDuration: self.animationDuration, animations: {
-                                    annotationView?.alpha = 0
-                                }) { (completed) in
-                                    self.mapView.removeAnnotation(annotation)
-                                }
+                            let annotationView = self.mapView.view(for: annotation)
+                            UIView.animate(withDuration: self.animationDuration, animations: {
+                                annotationView?.alpha = 0
+                            }) { (completed) in
+                                self.mapView.removeAnnotation(annotation)
                             }
+                            
                         }
                     }
                 }
                 gridMapRect.origin.x += gridSize
-                numberOfGrids += 1
             }
             gridMapRect.origin.y += gridSize
         }
     }
-
+    
 }
 
 extension MapViewController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
         if !hasInitiallyZoomedToUserLocation {
-//            zoomToLocation(coordinate: userLocation.coordinate)
+            zoomToLocation(coordinate: userLocation.coordinate)
             hasInitiallyZoomedToUserLocation = true
         }
     }
@@ -137,15 +152,6 @@ extension MapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         let visibleRect = mapView.visibleMapRect
         let bufferRect = visibleRect.insetBy(dx: -marginFactor * visibleRect.width, dy: -marginFactor * visibleRect.height)
-//        if let maxRect = maxBufferRect {
-//            if maxRect.contains(bufferRect) {
-//                DispatchQueue.global().async {
-//                    self.updateVisibleAnnotations()
-//                }
-////                return
-//            }
-//        }
-//        maxBufferRect = bufferRect
         let centerCoordinate = mapView.region.center
         let centerLocation = Location(coordinate: centerCoordinate)
         let centerPoint = MKMapPoint(centerCoordinate)
@@ -184,13 +190,10 @@ extension MapViewController: MKMapViewDelegate {
 
 extension MapViewController: MapViewControllerInput {
     func showPoints(_ points: [DepositionPoint]) {
-        DispatchQueue.global().async {
-            let newPoints = points.filter { (point) -> Bool in
-                return !self.allPoints.contains(point)
-            }
-            let annotations = newPoints.map { DepositionPointAnnotation(depositionPoint: $0) }
-            self.allAnnotationsMapView.addAnnotations(annotations)
-            self.updateVisibleAnnotations()
-        }
+        let annotations = points.map { DepositionPointAnnotation(depositionPoint: $0) }
+        // For purposes of this DEMO app (to declutter points on the map) all points are added as annotations to the hidden MKMapView instance.
+        // Adding too many annotations WILL cause memory issues
+        self.allAnnotationsMapView.addAnnotations(annotations)
+        self.updateVisibleAnnotations()
     }
 }
