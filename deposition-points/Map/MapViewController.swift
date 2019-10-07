@@ -82,13 +82,20 @@ class MapViewController: UIViewController {
             let nextDist = centerGridPoint.distance(to: MKMapPoint(next.coordinate))
             return prevDist <= nextDist
         }
-        return sorted.first!
+        guard let closest = sorted.first else {
+            fatalError("Error: annotations array should not be empty here")
+        }
+        return closest
     }
     
     private func updateAnnotations(in gridMapRect: MKMapRect) {
         let allAnnotationsInBucket = allAnnotationsMapView.annotations(in: gridMapRect)
-        let visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect).filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
-        var filteredAnnotationsInBucket = allAnnotationsInBucket.filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
+        guard let visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect).filter({ $0 is DepositionPointAnnotation }) as? Set<DepositionPointAnnotation> else {
+            return
+        }
+        guard var filteredAnnotationsInBucket = allAnnotationsInBucket.filter ({ $0 is DepositionPointAnnotation }) as? Set<DepositionPointAnnotation> else {
+            return
+        }
         if !filteredAnnotationsInBucket.isEmpty {
             let annotationForGrid = annotation(in: gridMapRect, using: filteredAnnotationsInBucket)
             self.mapView.addAnnotation(annotationForGrid)
