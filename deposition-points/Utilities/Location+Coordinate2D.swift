@@ -15,7 +15,7 @@ extension Location {
         latitude = coordinate.latitude
     }
     
-    var CLLocationCoordinate: CLLocationCoordinate2D {
+    var clLocationCoordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 }

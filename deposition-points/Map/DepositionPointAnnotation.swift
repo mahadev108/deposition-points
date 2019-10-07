@@ -13,7 +13,7 @@ class DepositionPointAnnotation: NSObject, MKAnnotation {
     let depositionPoint: DepositionPoint
     
     var coordinate: CLLocationCoordinate2D {
-        return depositionPoint.location.CLLocationCoordinate
+        return depositionPoint.location.clLocationCoordinate
     }
     
     init(depositionPoint: DepositionPoint) {

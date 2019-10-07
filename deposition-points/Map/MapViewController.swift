@@ -28,8 +28,8 @@ class MapViewController: UIViewController {
     var output: MapViewControllerOutput!
     
     // MARK: - Private properties
-    private var locationManager = CLLocationManager()
-    private var allAnnotationsMapView: MKMapView!
+    private let locationManager = CLLocationManager()
+    private lazy var allAnnotationsMapView: MKMapView = MKMapView(frame: CGRect.zero)
     private let defaultSpan = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     private let marginFactor = 0.1
     private let bucketSize = 100.0
@@ -39,9 +39,7 @@ class MapViewController: UIViewController {
     // MARK: - View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        allAnnotationsMapView = MKMapView(frame: CGRect.zero)
         controlsStackView.addArrangedSubview(MKUserTrackingButton(mapView: mapView))
-        
         mapView.delegate = self
         mapView.showsUserLocation = true
         mapView.register(DepositionPointAnnotationView.self, forAnnotationViewWithReuseIdentifier: DepositionPointAnnotationView.defaultReuseIdentifier)
@@ -87,6 +85,22 @@ class MapViewController: UIViewController {
         return sorted.first!
     }
     
+    private func updateAnnotations(in gridMapRect: MKMapRect) {
+        let allAnnotationsInBucket = allAnnotationsMapView.annotations(in: gridMapRect)
+        let visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect).filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
+        var filteredAnnotationsInBucket = allAnnotationsInBucket.filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
+        if !filteredAnnotationsInBucket.isEmpty {
+            let annotationForGrid = annotation(in: gridMapRect, using: filteredAnnotationsInBucket)
+            self.mapView.addAnnotation(annotationForGrid)
+            filteredAnnotationsInBucket.remove(annotationForGrid)
+            filteredAnnotationsInBucket.forEach { (annotation) in
+                if (visibleAnnotationsInBucket.contains(annotation)) {
+                    removeWithAnimation(annotation: annotation, from: mapView)
+                }
+            }
+        }
+    }
+    
     private func updateVisibleAnnotations() {
         let visibleRect = mapView.visibleMapRect
         let adjustedRect = visibleRect.insetBy(dx: -marginFactor * visibleRect.width, dy: -marginFactor * visibleRect.height)
@@ -105,19 +119,7 @@ class MapViewController: UIViewController {
         while gridMapRect.minY <= endY {
             gridMapRect.origin.x = startX
             while gridMapRect.minX <= endX {
-                let allAnnotationsInBucket = allAnnotationsMapView.annotations(in: gridMapRect)
-                let visibleAnnotationsInBucket = mapView.annotations(in: gridMapRect).filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
-                var filteredAnnotationsInBucket = allAnnotationsInBucket.filter { $0 is DepositionPointAnnotation } as! Set<DepositionPointAnnotation>
-                if !filteredAnnotationsInBucket.isEmpty {
-                    let annotationForGrid = annotation(in: gridMapRect, using: filteredAnnotationsInBucket)
-                    self.mapView.addAnnotation(annotationForGrid)
-                    filteredAnnotationsInBucket.remove(annotationForGrid)
-                    filteredAnnotationsInBucket.forEach { (annotation) in
-                        if (visibleAnnotationsInBucket.contains(annotation)) {
-                            removeWithAnimation(annotation: annotation, from: mapView)
-                        }
-                    }
-                }
+                updateAnnotations(in: gridMapRect)
                 gridMapRect.origin.x += gridSize
             }
             gridMapRect.origin.y += gridSize
